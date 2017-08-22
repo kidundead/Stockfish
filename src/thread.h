@@ -69,7 +69,6 @@ public:
   CounterMoveHistory counterMoves;
   ButterflyHistory mainHistory;
   ContinuationHistory contHistory;
-  int tbCardinality;
 };
 
 
