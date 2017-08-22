@@ -342,6 +342,7 @@ void Thread::search() {
   MainThread* mainThread = (this == Threads.main() ? Threads.main() : nullptr);
 
   std::memset(ss-4, 0, 7 * sizeof(Stack));
+  ss->tbCardinality = TB::Cardinality;
   for (int i = 4; i > 0; i--)
      (ss-i)->contHistory = &this->contHistory[NO_PIECE][0]; // Use as sentinel
 
@@ -599,6 +600,7 @@ namespace {
     ss->currentMove = (ss+1)->excludedMove = bestMove = MOVE_NONE;
     ss->contHistory = &thisThread->contHistory[NO_PIECE][0];
     (ss+2)->killers[0] = (ss+2)->killers[1] = MOVE_NONE;
+    (ss+1)->tbCardinality = ss->tbCardinality;
     Square prevSq = to_sq((ss-1)->currentMove);
 
     // Step 4. Transposition table lookup. We don't want the score of a partial
@@ -643,12 +645,12 @@ namespace {
     }
 
     // Step 4a. Tablebase probe
-    if (!rootNode && TB::Cardinality)
+    if (!rootNode && ss->tbCardinality)
     {
         int piecesCount = pos.count<ALL_PIECES>();
 
-        if (    piecesCount <= TB::Cardinality
-            && (piecesCount <  TB::Cardinality || depth >= TB::ProbeDepth)
+        if (    piecesCount <= ss->tbCardinality
+            && (piecesCount <  ss->tbCardinality || depth >= TB::ProbeDepth)
             &&  pos.rule50_count() == 0
             && !pos.can_castle(ANY_CASTLING))
         {
