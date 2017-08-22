@@ -679,6 +679,7 @@ namespace {
                 }
 
                 depth = std::max(depth / 2, ONE_PLY);
+                ss->tbCardinality = 0;
             }
         }
     }
